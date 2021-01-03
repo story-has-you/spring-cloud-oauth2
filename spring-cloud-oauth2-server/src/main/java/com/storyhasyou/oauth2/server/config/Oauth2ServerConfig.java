@@ -41,6 +41,9 @@ public class Oauth2ServerConfig extends AuthorizationServerConfigurerAdapter {
     @Autowired
     private DataSource dataSource;
 
+    @Autowired
+    private CustomizeAccessTokenConverter customizeAccessTokenConverter;
+
     /**
      * 认证服务器最终是以api接⼝的⽅式对外提供服务（校验合法性并⽣成令牌、 校验令牌等）
      * 那么，以api接⼝⽅式对外的话，就涉及到接⼝的访问权限，我们需要在这⾥ 进⾏必要的配置.
@@ -118,6 +121,7 @@ public class Oauth2ServerConfig extends AuthorizationServerConfigurerAdapter {
         jwtAccessTokenConverter.setSigningKey(SING_KEY);
         // 验证时使⽤的密钥，和签名密钥保持⼀致, MacSigner: 对称加密
         jwtAccessTokenConverter.setVerifier(new MacSigner(SING_KEY));
+        jwtAccessTokenConverter.setAccessTokenConverter(customizeAccessTokenConverter);
         return jwtAccessTokenConverter;
     }
 

@@ -1,5 +1,6 @@
 package com.storyhasyou.oauth2.client.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -23,10 +24,14 @@ import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 @SpringBootConfiguration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
-public class ResourcesServerConfig  extends ResourceServerConfigurerAdapter {
+public class ResourcesServerConfig extends ResourceServerConfigurerAdapter {
 
     private static final String CHECK_TOKEN_URL = "http://localhost:9999/oauth/check_token";
     private static final String SING_KEY = "story-has-you";
+
+    @Autowired
+    private CustomizeAccessTokenConverter customizeAccessTokenConverter;
+
 
 
     /**
@@ -91,6 +96,7 @@ public class ResourcesServerConfig  extends ResourceServerConfigurerAdapter {
     /**
      * 返回jwt令牌转换器，生成jwt令牌
      * 在这⾥，我们可以把签名密钥传递进去给转换器对象
+     *
      * @return the jwt access token converter
      */
     @Bean
@@ -100,6 +106,7 @@ public class ResourcesServerConfig  extends ResourceServerConfigurerAdapter {
         jwtAccessTokenConverter.setSigningKey(SING_KEY);
         // 验证时使⽤的密钥，和签名密钥保持⼀致, MacSigner: 对称加密
         jwtAccessTokenConverter.setVerifier(new MacSigner(SING_KEY));
+        jwtAccessTokenConverter.setAccessTokenConverter(customizeAccessTokenConverter);
         return jwtAccessTokenConverter;
     }
 }

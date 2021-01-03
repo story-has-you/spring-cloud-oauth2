@@ -1,6 +1,7 @@
 package com.storyhasyou.oauth2.client.controller;
 
 import com.storyhasyou.kratos.result.Result;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -11,8 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class ClientController {
 
     @GetMapping("/client1/hello")
-    public Result<String> hello() {
-        return Result.ok("hello client1");
+    public Result<Object> hello() {
+        Object details = SecurityContextHolder.getContext().getAuthentication().getDetails() ;
+        return Result.ok(details);
     }
 
     @GetMapping("/hi")
