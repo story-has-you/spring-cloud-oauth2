@@ -1,0 +1,5 @@
+rootProject.name = 'spring-cloud-oauth2'
+include 'spring-cloud-oauth2-eureka'
+include 'spring-cloud-oauth2-server'
+include 'spring-cloud-oauth2-client'
+

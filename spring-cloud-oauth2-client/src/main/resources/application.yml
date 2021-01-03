@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: spring-cloud-oauth2-client1
+
+server:
+  port: 8001
+
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://127.0.0.1:8761/eureka
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.cloud.client.ipaddress}:${spring.application.name}:${server.port}

@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: spring-cloud-oauth2-eureka
+
+server:
+  port: 8761
+
+
+eureka:
+  instance:
+    hostname: 127.0.0.1
+  client:
+    service-url:
+      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
+    register-with-eureka: false
+    fetch-registry: false
