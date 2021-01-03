@@ -1,6 +1,20 @@
 spring:
   application:
     name: spring-cloud-oauth2-server
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://106.15.59.70:4000/spring_cloud_oauth2?useUnicode=true&characterEncoding=UTF-8&serverTimezone=CTT&useSSL=false
+    username: root
+    password: 123456
+    hikari:
+      minimum-idle: 5
+      auto-commit: true
+      idle-timeout: 600000
+      maximum-pool-size: 20
+      pool-name: MyHikariCP
+      max-lifetime: 1800000
+      connection-timeout: 30000
+      connection-test-query: SELECT 1
 
 server:
   port: 9999

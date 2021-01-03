@@ -11,11 +11,14 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.A
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.client.JdbcClientDetailsService;
 import org.springframework.security.oauth2.provider.token.AuthorizationServerTokenServices;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
+
+import javax.sql.DataSource;
 
 /**
  * 当前类为Oauth2 server的配置类（需要继承特定的⽗类 AuthorizationServerConfigurerAdapter）
@@ -34,6 +37,9 @@ public class Oauth2ServerConfig extends AuthorizationServerConfigurerAdapter {
      */
     @Autowired
     private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private DataSource dataSource;
 
     /**
      * 认证服务器最终是以api接⼝的⽅式对外提供服务（校验合法性并⽣成令牌、 校验令牌等）
@@ -64,17 +70,8 @@ public class Oauth2ServerConfig extends AuthorizationServerConfigurerAdapter {
      */
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
-        // 基于用户名和密码改造
-        clients.inMemory()
-                .withClient("client_lagou")
-                .secret("123456")
-                // 指定客户端 所能访问资源id清单，此处的资源id是需要在具体的资源服务器上也配置⼀样
-                .resourceIds("resource_1")
-                // 认证类型/令牌颁发模式，可以配置多个在这⾥，但是不⼀定 都⽤，具体使⽤哪种⽅式颁发token，需要客户端调⽤的时候传递参数指定
-                .authorizedGrantTypes("password", "refresh_token")
-                // 客户端的权限范围，此处配置为all全部即可
-                .scopes("all");
-
+        // 基于JDBC改造
+        clients.withClientDetails(jdbcClientDetailsService());
     }
 
     /**
@@ -140,9 +137,17 @@ public class Oauth2ServerConfig extends AuthorizationServerConfigurerAdapter {
         // 针对jwt令牌添加
         defaultTokenServices.setTokenEnhancer(jwtAccessTokenConverter());
         // 设置令牌有效时间, 一般2个小时
-        defaultTokenServices.setAccessTokenValiditySeconds(60 * 60 * 2);
+        defaultTokenServices.setAccessTokenValiditySeconds(60);
         // 设置刷新令牌有效时间, 3天
         defaultTokenServices.setRefreshTokenValiditySeconds(60 * 60 * 24 * 3);
         return defaultTokenServices;
     }
+
+    @Bean
+    public JdbcClientDetailsService jdbcClientDetailsService() {
+        return new JdbcClientDetailsService(dataSource);
+    }
+
+
+
 }
